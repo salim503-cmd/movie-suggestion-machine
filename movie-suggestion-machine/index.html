@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#6d28d9">
+<title>Movie Suggestion Machine – Movie Picker</title>
+<style>
+:root{--bg:#ffffff;--fg:#1b1f2e;--mut:#667085;--card:#ffffff;--chip:#f4f5fa;--bd:#e3e6ef;--ac:#e11d48;--ac2:#6d28d9;--gold:#ffb703;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg)}
+body{background:linear-gradient(180deg,color-mix(in srgb,var(--ac2) 7%,#fff),#fff 260px) no-repeat,#fff}
+main{max-width:520px;margin:0 auto;padding:16px}
+button{font:inherit;cursor:pointer}
+.top{display:flex;justify-content:space-between;align-items:center;height:40px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.1rem}
+.brand b{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2))}
+.cnt{font-size:.85rem;color:var(--mut);font-variant-numeric:tabular-nums}
+.strip{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;margin:16px 0 24px}
+.strip i{height:8px;border-radius:4px;background:var(--bd);transition:background .3s}
+.strip i.d{background:linear-gradient(90deg,var(--ac),var(--ac2))}.strip i.c{background:var(--gold)}
+.q{background:var(--card);border:1px solid var(--bd);border-radius:24px;padding:24px 16px;text-align:center;box-shadow:0 12px 28px -16px color-mix(in srgb,var(--ac2) 60%,transparent);animation:slide .35s ease both}
+.big{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-size:2rem;margin:0 auto 16px;background:color-mix(in srgb,var(--ac) 14%,var(--bg));animation:float 3s ease-in-out infinite}
+h1{font-size:1.5rem;line-height:1.3;margin:24px 0 8px}h2{font-size:1.3rem;line-height:1.3;margin:0 0 8px}
+.sub{color:var(--mut);font-size:.9rem;line-height:1.4;margin:0 0 24px}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left}
+.chips.one{grid-template-columns:1fr}
+.chips .chip:last-child:nth-child(odd){grid-column:1/-1}
+.chip{display:grid;grid-template-columns:24px 1fr;align-items:center;gap:8px;min-height:52px;padding:8px 12px;background:var(--chip);color:var(--fg);border:1.5px solid var(--bd);border-radius:12px;font-size:.95rem;line-height:1.3;text-align:left;animation:pop .3s ease both;transition:transform .15s}
+.chip.ne{grid-template-columns:1fr}
+.chip b{font-weight:400;font-size:1.15rem;text-align:center}
+.chip.on{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent;transform:scale(1.02)}
+.rows{text-align:left}
+.row{display:grid;grid-template-columns:1fr 140px;align-items:center;gap:8px;min-height:56px;border-bottom:1px dashed var(--bd)}
+.row:last-child{border:0}
+select{font:inherit;width:100%;height:40px;background:var(--chip);color:var(--fg);border:1.5px solid var(--bd);border-radius:12px;padding:0 8px}
+.nav{position:sticky;bottom:0;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:16px 0 8px;background:linear-gradient(transparent,var(--bg) 30%)}
+.nb{height:48px;border:1.5px solid var(--bd);background:var(--chip);color:var(--fg);border-radius:12px;font-weight:600;font-size:.95rem}
+.nb.go{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border:0}
+.nb:disabled{opacity:.35}
+.card{box-shadow:0 6px 18px -10px rgba(30,30,70,.25);display:grid;grid-template-columns:72px 1fr;gap:16px;background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:16px;margin-bottom:16px;animation:slide .4s ease both}
+.poster{width:72px;height:108px;border-radius:12px;color:#fff;display:grid;place-items:center;font-size:2rem;font-weight:800}
+.badge{display:inline-block;background:var(--gold);color:#2a1d00;font-size:.75rem;font-weight:700;line-height:1;padding:6px 10px;border-radius:999px;margin-bottom:8px}
+.card h3{margin:0 0 4px;font-size:1.1rem;line-height:1.3}
+.meta{color:var(--mut);font-size:.85rem;margin-bottom:8px}
+.card p{margin:0 0 8px;font-size:.92rem;line-height:1.4}
+.why{font-size:.8rem;color:var(--mut);line-height:1.4;margin-bottom:4px}
+.links{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.links a{display:grid;place-items:center;height:36px;border:1.5px solid var(--bd);border-radius:10px;color:var(--ac);font-weight:700;font-size:.82rem;text-decoration:none}
+.sk .poster{background:var(--bd)}.sk i{display:block;height:12px;border-radius:6px;background:var(--bd);margin-bottom:12px}.sk{animation:pulse 1.2s ease-in-out infinite}
+.btn{display:block;width:100%;height:52px;border:0;border-radius:14px;font-weight:700;font-size:1rem;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff}
+.btn.g{background:none;color:var(--mut);border:1.5px solid var(--bd);margin-top:8px;font-weight:600}
+.note{font-size:.78rem;color:var(--mut);margin:16px 0 0;line-height:1.4;text-align:center}
+.conf{position:fixed;top:0;width:10px;height:10px;border-radius:50%;pointer-events:none;z-index:9;animation:fall 2.6s linear forwards}
+@keyframes slide{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.8)}to{opacity:1}}
+@keyframes float{50%{transform:translateY(-4px) rotate(6deg)}}
+@keyframes wig{50%{transform:rotate(-14deg)}}
+@keyframes pulse{50%{opacity:.55}}
+@keyframes fall{to{transform:translateY(105vh) rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.poster img{width:100%;height:100%;object-fit:cover;border-radius:12px;display:block}
+</style></head>
+<body><main id="app"></main>
+<script>
+const $=id=>document.getElementById(id);
+const esc=x=>String(x==null?"":x).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const lb=o=>o,em=o=>"";
+const EX=["I don't know — surprise me","Any language with subtitles"],YN="Doesn't matter",SH=YN;
+const Q=[
+{k:"mood",e:"",q:"How are you feeling right now?",h:"Pick as many as fit. No wrong answers.",m:1,o:["Relaxed / entertained","Excited","Suspenseful","Thrilled","Emotionally moved","Thought-provoking","Inspired","Scared","Laugh","Dark / disturbing","Escapist","Something intellectually challenging",EX[0]]},
+{k:"genre",e:"",q:"Which genres?",h:"Pick any that fit.",m:1,o:["Thriller","Crime","Mystery","Drama","Action","Comedy","Horror","Sci-fi","Historical","War","Romance","Adventure","Psychological","Biographical","Family","Political","Courtroom","Gangster","Heist","Survival"]},
+{k:"hook",c:1,e:"",q:"How fast should the movie grab you?",o:["Hook me within 5–10 minutes","I can tolerate a slow build","Slow-burn is actually what I want",SH]},
+{k:"brain",c:1,e:"",q:"How intellectually demanding?",o:["Easy watch — just entertain me","Moderate — some thinking is good","Intelligent — I want to figure things out","Complex — I enjoy complicated plots","Very complex — I'm happy to rewatch/reconstruct the story"]},
+{k:"end",e:"",q:"Ending preference",h:"This can change the recommendation a lot.",o:["Happy","Satisfying","Bittersweet","Dark","Shocking","Twist ending","Ambiguous",YN,"I absolutely don't want a depressing ending"]},
+{k:"pace",e:"",q:"Movie pace",o:["Fast","Medium","Slow",SH]},
+{k:"lang",e:"",q:"Which language?",h:"Pick any.",m:1,o:["English","Hindi","Malayalam","Tamil","Telugu","Korean","Japanese","Spanish","French","Persian","Arabic",EX[1]]},
+{k:"age",c:1,e:"",q:"How old can the movie be?",o:["Only recent — last 2–3 years","Last 5 years","Last 10 years","Any movie after 2000","Any year","Give me the best movie regardless of age"]},
+{k:"cont",e:"",q:"How much of this is okay?",h:"Set your comfort level for each.",g:["Violence / darkness","Gore","Sexual content","Strong language","Disturbing themes"],o:["Very little","Some","Moderate","Heavy",YN]},
+{k:"who",e:"",q:"Who are you watching with?",h:"This changes the recommendation a lot.",o:["Alone","Wife/partner","Family","Children","Friends"]},
+{k:"att",c:1,e:"",q:"Your attention level right now",h:"The most underrated question.",o:["Brain tired — give me something effortless","Normal","I'm fresh — challenge me","I want something so gripping that I forget everything else"]}
+];
+const N=5,hdr=r=>`<div class="top"><div class="brand"><b></b>Movie Suggestion Machine</div><span class="cnt">${r}</span></div>`;
+let step=0,ans={},shown=new Set(),seenT=[],sam=null,busy=false,app=$("app");
+function ask(){
+ const q=Q[step],cur=ans[q.k],last=step===Q.length-1,sel=o=>q.m?(cur||[]).includes(lb(o)):cur===lb(o);
+ const b=q.g?`<div class="rows">${q.g.map((g,i)=>`<label class="row"><span>${g}</span><select data-g="${i}">${q.o.map(o=>`<option${((cur&&cur[g])||YN)===o?" selected":""}>${o}</option>`).join("")}</select></label>`).join("")}</div>`:`<div class="chips${q.c?" one":""}">${q.o.map((o,i)=>`<button class="chip${em(o)?"":" ne"}${sel(o)?" on":""}" data-i="${i}" style="animation-delay:${i*25}ms">${em(o)?`<b>${em(o)}</b>`:""}<span>${esc(lb(o))}</span></button>`).join("")}</div>`;
+ app.innerHTML=hdr(`${step+1} / ${Q.length}`)+`<div class="strip">${Q.map((_,i)=>`<i class="${i<step?"d":i===step?"c":""}"></i>`).join("")}</div>
+ <section class="q"><h2>${q.q}</h2><p class="sub">${q.h||"Choose one"}</p>${b}</section>
+ <nav class="nav"><button class="nb" id="back"${step?"":" disabled"}>← Back</button><button class="nb" id="skip">Skip</button><button class="nb go" id="next">${last?"Find movies ":"Next →"}</button></nav>`;
+ window.scrollTo(0,0);
+ const nx=$("next"),upd=()=>{nx.disabled=!(q.g||(q.m?(ans[q.k]||[]).length:ans[q.k]))};upd();
+ app.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+  const o=lb(q.o[+c.dataset.i]),c0=q.m?(ans[q.k]||[]):[],base=c0.filter(x=>!EX.includes(x));
+  ans[q.k]=q.m?(EX.includes(o)?(c0.includes(o)?[]:[o]):(c0.includes(o)?base.filter(x=>x!==o):[...base,o])):o;
+  app.querySelectorAll(".chip").forEach(d=>{const x=lb(q.o[+d.dataset.i]);d.classList.toggle("on",q.m?ans[q.k].includes(x):ans[q.k]===x)});upd();
+ });
+ const go=()=>{step++;step<Q.length?ask():result()};
+ nx.onclick=()=>{if(q.g){ans[q.k]={};app.querySelectorAll("select").forEach(x=>ans[q.k][q.g[+x.dataset.g]]=x.value)}go()};
+ $("skip").onclick=()=>{delete ans[q.k];go()};
+ $("back").onclick=()=>{step--;ask()};
+}
+function card(m){const rt=m.runtime||0,q=encodeURIComponent(m.title+" "+m.year);
+ const av=m.stream.length?"Streaming on: "+m.stream.join(", "):m.rent.length?"Rent or buy on: "+m.rent.join(", "):"Not on Indian streaming apps right now";
+ return `<div class="card"><div class="poster"><img src="https://image.tmdb.org/t/p/w342${m.poster}" alt=""></div><div>
+ <span class="badge">TMDB ${esc(m.score)}</span><h3>${esc(m.title)}</h3>
+ <div class="meta">${esc(m.year)}${rt?" · "+Math.floor(rt/60)+"h "+rt%60+"m":""} · ${esc(m.lang)}${m.cert?" · "+esc(m.cert):""}</div><p>${esc(m.overview)}</p>
+ <div class="why">Fits: ${esc(m.fits.join(", "))}</div><div class="why">${esc(av)}</div>
+ <div class="links"><a href="${m.link}" target="_blank" rel="noopener">TMDB</a><a href="${m.imdb?"https://www.imdb.com/title/"+m.imdb+"/":"https://www.imdb.com/find/?q="+q}" target="_blank" rel="noopener">IMDb</a><a href="https://en.wikipedia.org/w/index.php?search=${q}+film" target="_blank" rel="noopener">Wiki</a></div></div></div>`}
+const MSG=["Searching TMDB…","Checking Indian streaming apps…","Matching your answers…"];
+async function result(){
+ if(busy)return;busy=true;
+ app.innerHTML=hdr("")+`<h1>Tonight's ${N} picks</h1><p class="sub" id="st">${MSG[0]}</p><div id="list">${'<div class="card sk"><div class="poster"></div><div><i></i><i></i><i></i></div></div>'.repeat(N)}</div><div id="act"></div>`;
+ window.scrollTo(0,0);let i=0;const t=setInterval(()=>{$("st").textContent=MSG[++i%MSG.length]},1500);
+ try{const r=await fetch("/api/recommend",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ans,seen:seenT})}),j=await r.json();
+  if(!r.ok)throw new Error(j.error||"Server error");
+  $("list").innerHTML=j.movies.map(card).join("");j.movies.forEach(m=>seenT.push(m.id));$("st").textContent=j.note}
+ catch(e){$("list").innerHTML="";$("st").textContent="Could not load picks ("+e.message+")."}
+ clearInterval(t);
+ $("act").innerHTML=`<button class="btn" id="again">Show me 5 different ones</button><button class="btn g" id="restart">Start over</button><p class="note">This product uses the TMDB API but is not endorsed or certified by TMDB. Streaming availability data is provided by JustWatch.</p>`;
+ $("again").onclick=result;$("restart").onclick=()=>{step=0;ans={};seenT=[];ask()};busy=false;
+}
+ask();
+if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
+</script></body></html>
